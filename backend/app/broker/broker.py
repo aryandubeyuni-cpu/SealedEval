@@ -11,7 +11,8 @@ from app.zones.model import REFUSAL as MODEL_REFUSAL
 
 ROLES = ("red", "blue", "operator")
 REJECTION_EVENTS = ("auth_rejected", "schema_rejected", "salt_missing")
-ALERT_EVENTS = ("auth_rejected", "schema_rejected", "salt_missing", "tick_miss", "pad_overflow")
+ALERT_EVENTS = ("auth_rejected", "schema_rejected", "salt_missing", "tick_miss", "pad_overflow",
+                "tripwire_triggered", "run_frozen", "preflight_failed", "run_aborted")
 
 
 class Broker:
@@ -171,21 +172,25 @@ class Broker:
         if role not in ROLES or not secrets.compare_digest(str(token), self.tokens[role]):
             self.log.append("auth_rejected", {"role": role})
             return {"error": "rejected"}
+        return scoped_view(role, entries, self._delivered_to_red, self.expected_total)
 
-        processed = sum(e["event_type"] == "prompt_processed" for e in entries)
-        if role == "blue":
-            return {"role": "blue", "progress": {"processed": processed, "total": self.expected_total}}
-        if role == "red":
-            return {"role": "red", "responses": list(self._delivered_to_red)}
-        return {
-            "role": "operator",
-            "health": "ok",
-            "processed": processed,
-            "tick_misses": sum(e["event_type"] == "tick_miss" for e in entries),
-            "rejections": sum(e["event_type"] in REJECTION_EVENTS for e in entries),
-            "alerts": [{"index": e["index"], "event_type": e["event_type"]}
-                       for e in entries if e["event_type"] in ALERT_EVENTS],
-        }
+
+def scoped_view(role: str, entries: list[dict], red_responses: list[dict], expected_total: int | None) -> dict:
+    """What one role may see of a sealed run (no auth here: callers check tokens first)."""
+    processed = sum(e["event_type"] == "prompt_processed" for e in entries)
+    if role == "blue":
+        return {"role": "blue", "progress": {"processed": processed, "total": expected_total}}
+    if role == "red":
+        return {"role": "red", "responses": list(red_responses)}
+    return {
+        "role": "operator",
+        "health": "ok",
+        "processed": processed,
+        "tick_misses": sum(e["event_type"] == "tick_miss" for e in entries),
+        "rejections": sum(e["event_type"] in REJECTION_EVENTS for e in entries),
+        "alerts": [{"index": e["index"], "event_type": e["event_type"]}
+                   for e in entries if e["event_type"] in ALERT_EVENTS],
+    }
 
 
 def _valid_prompt_message(message) -> bool:

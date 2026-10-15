@@ -39,7 +39,7 @@ SealedEval/
       broker/    broker.py
       safety/    preflight.py, tripwires.py
       evidence/  bundle.py, verify.py
-      demo/      naive_run.py, sealed_run.py, attacks.json
+      demo/      naive_run.py, sealed_run.py, run_all.py, common.py, store.py (API-facing state), attacks.json
       api/       main.py   (FastAPI routes only)
     tests/       test_core.py   (run: cd backend && python -m tests.test_core)
     data/        runtime outputs (git-ignored)
@@ -47,7 +47,7 @@ SealedEval/
   frontend/
     index.html, css/style.css, js/api.js, js/app.js
   docs/API.md    API contract between frontend and backend
-  scripts/       run_backend.ps1/.sh (port 8000), run_frontend.ps1/.sh (port 5500)
+  scripts/       run_backend.ps1/.sh (port 8001, reload watches backend/app only), run_backend_demo.ps1/.sh (port 8001, no reload), run_frontend.ps1/.sh (port 5500)
   .venv/         virtual environment (repo root)
 ```
 
@@ -59,5 +59,5 @@ SealedEval/
 4. Preflight + tripwires (`safety/`: sandbox, tripwires, preflight, escape_agent) ✅
 5. Naive vs sealed demo (`demo/`: naive_run, sealed_run, run_all; run: `cd backend && python -m app.demo.run_all`) ✅
 6. Evidence bundle + verifier (`evidence/`) ✅. Outputs in `backend/data/`: `naive_results.json`, `sealed_results.json`, `bundle.json`, `*_events.jsonl`
-7. Web dashboard (`api/main.py` routes + `frontend/`)
+7. Web dashboard (`api/main.py` routes + `frontend/`; backend port 8001, frontend 5500) ✅
 8. README

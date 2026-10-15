@@ -31,14 +31,16 @@ The header should show **Backend connected**.
 
 **Windows (PowerShell)**
 ```powershell
-.\scripts\run_backend.ps1     # API on http://localhost:8000
+.\scripts\run_backend.ps1     # API on http://localhost:8001
 .\scripts\run_frontend.ps1    # dashboard on http://localhost:5500
 ```
 If PowerShell refuses to run scripts, run this once: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
+For a live demo, start the backend with `.\scripts\run_backend_demo.ps1` (or `./scripts/run_backend_demo.sh`) instead: same port, no auto-reload.
+
 **Mac / Linux**
 ```bash
-./scripts/run_backend.sh      # API on http://localhost:8000
+./scripts/run_backend.sh      # API on http://localhost:8001
 ./scripts/run_frontend.sh     # dashboard on http://localhost:5500
 ```
 

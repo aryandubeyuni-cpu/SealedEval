@@ -7,36 +7,99 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- 1. Header -->
   <header class="topbar">
-    <h1>SealedEval</h1>
-    <span id="backend-status" class="status status-pending">Checking backend…</span>
+    <div class="brand">
+      <h1>SealedEval</h1>
+      <span class="tagline">Cheat-proof AI safety testing</span>
+    </div>
+    <div id="backend-status" class="status pending"><span class="dot"></span><span class="text">Checking backend…</span></div>
   </header>
 
-  <main class="grid">
-    <section id="run-controls" class="panel">
-      <h2>Run controls</h2>
-      <div class="panel-body"></div>
+  <!-- 2. Controls -->
+  <nav class="controls">
+    <button data-action="naive" class="btn">Run naive (today's setup)</button>
+    <button data-action="sealed" class="btn primary">Run SealedEval</button>
+    <button data-action="misconfigured" class="btn">Run misconfigured sandbox</button>
+    <button data-action="verify" class="btn">Verify evidence</button>
+    <button data-action="tamper" class="btn danger">Tamper with log</button>
+    <button data-action="reset" class="btn ghost">Reset</button>
+    <div id="busy" class="busy" hidden><span class="spinner"></span><span id="busy-text"></span></div>
+  </nav>
+  <div id="error" class="error-bar" hidden></div>
+
+  <main>
+    <!-- 3. Comparison -->
+    <section class="panel">
+      <h2>Naive vs SealedEval</h2>
+      <table class="compare">
+        <thead><tr><th>Check</th><th>Naive (today)</th><th>SealedEval</th></tr></thead>
+        <tbody id="compare-body"></tbody>
+      </table>
     </section>
 
-    <section id="preflight" class="panel">
-      <h2>Pre-flight</h2>
-      <div class="panel-body"></div>
+    <!-- 4. Narratives -->
+    <div class="two-col">
+      <section class="panel">
+        <h2>What went wrong <span class="sub">naive run</span></h2>
+        <ul id="went-wrong" class="story bad"></ul>
+      </section>
+      <section class="panel">
+        <h2>What SealedEval did <span class="sub">sealed run</span></h2>
+        <ul id="held" class="story good"></ul>
+      </section>
+    </div>
+
+    <div class="two-col">
+      <!-- 5. Pre-flight -->
+      <section class="panel">
+        <h2>Pre-flight <span id="preflight-source" class="sub"></span>
+          <button data-action="preflight" class="btn small">Re-run probes</button></h2>
+        <div id="abort-banner" class="abort-banner" hidden></div>
+        <table class="grid-table">
+          <thead><tr><th>Zone</th><th>Probe</th><th>Denied?</th><th>Result</th></tr></thead>
+          <tbody id="preflight-body"></tbody>
+        </table>
+      </section>
+
+      <!-- 6. Commitments -->
+      <section class="panel">
+        <h2>Commitments <span class="sub">fixed before the run · click a hash to copy</span></h2>
+        <div id="commitments"></div>
+      </section>
+    </div>
+
+    <!-- 7. Evidence -->
+    <section class="panel">
+      <h2>Evidence bundle <span id="signature-status" class="sub"></span></h2>
+      <div id="evidence-status" class="evidence-status neutral">Not verified yet</div>
+      <div id="claims" class="claims"></div>
     </section>
 
-    <section id="live-log" class="panel">
-      <h2>Live log</h2>
-      <div class="panel-body"></div>
-    </section>
+    <div class="two-col">
+      <!-- 8. Role views -->
+      <section class="panel">
+        <h2>Role views <span class="sub">what each party is allowed to see</span></h2>
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-role="operator">Operator</button>
+          <button class="tab" data-role="red">Red</button>
+          <button class="tab" data-role="blue">Blue</button>
+        </div>
+        <div id="role-view" class="role-view"></div>
+      </section>
 
-    <section id="results" class="panel">
-      <h2>Results</h2>
-      <div class="panel-body"></div>
-    </section>
-
-    <section id="evidence" class="panel">
-      <h2>Evidence</h2>
-      <div class="panel-body"></div>
-    </section>
+      <!-- 9. Live log -->
+      <section class="panel">
+        <h2>Live log <span id="log-source" class="sub"></span></h2>
+        <div id="chain-status" class="chain neutral">No log yet</div>
+        <div class="log-scroll">
+          <table class="grid-table log">
+            <thead><tr><th>#</th><th>Event</th><th>Hash</th></tr></thead>
+            <tbody id="log-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   </main>
 
   <script src="js/api.js"></script>

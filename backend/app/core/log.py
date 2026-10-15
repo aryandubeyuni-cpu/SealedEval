@@ -48,10 +48,13 @@ class HashChainLog:
             f.write(canonical_json(entry) + "\n")
         return entry
 
-    def verify(self) -> tuple[bool, int | None, str]:
-        """Recompute every hash and check every link. Returns (ok, first_bad_index, reason)."""
+    def verify(self, entries: list[dict] | None = None) -> tuple[bool, int | None, str]:
+        """Recompute every hash and check every link. Returns (ok, first_bad_index, reason).
+
+        Pass `entries` to verify a snapshot you already read (e.g. while a run is still appending).
+        """
         prev = GENESIS_HASH
-        for i, entry in enumerate(self.read_all()):
+        for i, entry in enumerate(self.read_all() if entries is None else entries):
             if entry.get("index") != i:
                 return False, i, f"entry {i}: index field is {entry.get('index')}"
             if entry["prev_hash"] != prev:
