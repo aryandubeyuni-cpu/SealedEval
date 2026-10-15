@@ -54,7 +54,7 @@ SealedEval/
 
 1. Proof core (`core/`: crypto, log, contract) ✅
 2. Zones (`zones/`: red, blue, model; data: `demo/attacks.json`, `zones/blue_rules.json`, `zones/model_weights.json`) ✅
-3. Broker (`broker/`)
+3. Broker (`broker/`) ✅
 4. Preflight + tripwires (`safety/`)
 5. Naive vs sealed demo (`demo/`)
 6. Evidence bundle + verifier (`evidence/`)

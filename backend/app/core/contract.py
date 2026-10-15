@@ -9,7 +9,7 @@ from .crypto import canonical_json, sha256_hex
 class InformationFlowContract:
     """What each party may observe during a run. The broker enforces it; its hash goes in the log."""
 
-    tick_ms: int = 300            # responses are released only on fixed ticks (hides timing)
+    tick_ms: int = 600            # responses are released only on fixed ticks (hides timing); > slowest path (~0.45s)
     pad_bytes: int = 512          # every message is padded to this size (hides length)
     unified_refusal: str = "I can't help with that request."  # same text for every block reason
     red_sees: list[str] = field(default_factory=list)

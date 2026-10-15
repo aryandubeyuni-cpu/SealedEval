@@ -157,7 +157,7 @@ Response `200`:
   "run_id": "run-20261015-193000",
   "created_at": "2026-10-15T19:30:05+00:00",
   "commitments": { "red_root": "ab12…", "blue_hash": "cd34…", "model_hash": "ef56…", "contract_hash": "0912…" },
-  "contract": { "tick_ms": 300, "pad_bytes": 512, "unified_refusal": "I can't help with that request.", "red_sees": ["final_response_text_or_unified_refusal"], "blue_sees": ["single_prompt_at_checkpoint"], "operator_sees": ["health", "alerts"], "humans_see_prompts_during_run": false },
+  "contract": { "tick_ms": 600, "pad_bytes": 512, "unified_refusal": "I can't help with that request.", "red_sees": ["final_response_text_or_unified_refusal"], "blue_sees": ["single_prompt_at_checkpoint"], "operator_sees": ["health", "alerts"], "humans_see_prompts_during_run": false },
   "claims": [
     { "claim": "Blue defense was frozen before the run", "label": "VERIFIED", "evidence": "blue_hash matches pre- and post-run" },
     { "claim": "All traffic went through the broker", "label": "ENFORCED", "evidence": "zones have no other route" },
