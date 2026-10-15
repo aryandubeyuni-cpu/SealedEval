@@ -17,28 +17,46 @@ SealedEval makes adversarial AI safety tests leak-proof and verifiable. Three pa
 - No Docker, no GPU, no real LLM. Zones are simulated as separate Python modules/processes. The MODEL is a simple rule-based mock.
 - Must run on Windows, Mac and Linux.
 - Every module must be small, readable and demo-friendly.
+- Frontend is plain HTML/CSS/JS (no build step, no framework).
+
+## Architecture rules
+
+- **The frontend talks to the backend ONLY through the endpoints in [docs/API.md](docs/API.md).** Every fetch lives in `frontend/js/api.js`.
+- `backend/app/api/main.py` only wires routes. Business logic lives in the other `app/` packages.
+- Adding or changing an endpoint means updating `docs/API.md`, `api/main.py` and `js/api.js` together.
+- Backend Python runs from inside `backend/`, so imports look like `from app.core.log import HashChainLog`.
+- Runtime outputs (keys, logs, bundles) go in `backend/data/` (git-ignored). `app.core.crypto.DATA_DIR` points there.
 
 ## Layout
 
 ```
-sealedeval/
-  core/      crypto.py, log.py, contract.py
-  zones/     red.py, blue.py, model.py
-  broker/    broker.py
-  safety/    preflight.py, tripwires.py
-  evidence/  bundle.py, verify.py
-  demo/      naive_run.py, sealed_run.py, attacks.json
-  web/       app.py, static/index.html
-  data/      runtime outputs (git-ignored)
+SealedEval/
+  backend/
+    app/
+      core/      crypto.py, log.py, contract.py      (proof core, done)
+      zones/     red.py, blue.py, model.py
+      broker/    broker.py
+      safety/    preflight.py, tripwires.py
+      evidence/  bundle.py, verify.py
+      demo/      naive_run.py, sealed_run.py, attacks.json
+      api/       main.py   (FastAPI routes only)
+    tests/       test_core.py   (run: cd backend && python -m tests.test_core)
+    data/        runtime outputs (git-ignored)
+    requirements.txt
+  frontend/
+    index.html, css/style.css, js/api.js, js/app.js
+  docs/API.md    API contract between frontend and backend
+  scripts/       run_backend.ps1/.sh (port 8000), run_frontend.ps1/.sh (port 5500)
+  .venv/         virtual environment (repo root)
 ```
 
 ## Build order
 
-1. Proof core (`core/`: crypto, log, contract)
+1. Proof core (`core/`: crypto, log, contract) ✅
 2. Zones (`zones/`: red, blue, model)
 3. Broker (`broker/`)
 4. Preflight + tripwires (`safety/`)
 5. Naive vs sealed demo (`demo/`)
 6. Evidence bundle + verifier (`evidence/`)
-7. Web dashboard (`web/`)
+7. Web dashboard (`api/main.py` routes + `frontend/`)
 8. README
