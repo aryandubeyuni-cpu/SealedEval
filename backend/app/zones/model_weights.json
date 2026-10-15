@@ -1,0 +1,9 @@
+{
+  "name": "mock-model-v1",
+  "note": "Fake weights. Only used to prove via fingerprint that the model did not change during a run.",
+  "layers": [
+    [0.12, -0.53, 0.88, 0.07],
+    [-0.31, 0.44, -0.19, 0.95],
+    [0.66, -0.02, 0.27, -0.71]
+  ]
+}

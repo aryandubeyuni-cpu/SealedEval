@@ -82,6 +82,11 @@ def verify_proof(item: str, salt: str, proof: list[tuple[str, str]], root: str) 
     return h == root
 
 
+def recompute_root(items: list[str], salts: list[str]) -> str:
+    """Rebuild the root from revealed items + salts (what a verifier does after the run)."""
+    return merkle_root([_leaf(item, salt) for item, salt in zip(items, salts)])
+
+
 # ---------------------------------------------------------------- file fingerprints
 
 def hash_files(paths: list[str]) -> str:
