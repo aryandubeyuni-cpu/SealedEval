@@ -121,10 +121,14 @@ def load_or_create_keypair(path: str | os.PathLike = DATA_DIR / "signing_key.pem
             format=serialization.PrivateFormat.PKCS8,
             encryption_algorithm=serialization.NoEncryption(),
         ))
-    public_raw = private_key.public_key().public_bytes(
+    return private_key, public_key_hex(private_key)
+
+
+def public_key_hex(private_key: Ed25519PrivateKey) -> str:
+    """Raw 32-byte Ed25519 public key as hex (what goes into an evidence bundle)."""
+    return private_key.public_key().public_bytes(
         encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
-    )
-    return private_key, public_raw.hex()
+    ).hex()
 
 
 def sign(private_key: Ed25519PrivateKey, message: str) -> str:

@@ -28,12 +28,23 @@ class RedTeam:
     # ------------------------------------------------------------ spy methods (naive demo ONLY)
     # These show what an attacker learns when zones share one environment.
 
-    def try_read_blue_rules(self, path: str | Path) -> dict | None:
-        """Leak 1: read the defender's rules + secret policy straight off a shared disk."""
+    def try_read_blue_rules(self, path: str | Path, sandbox=None) -> dict | None:
+        """Leak 1: read the defender's rules + secret policy straight off a shared disk.
+
+        With a sandbox, the read goes through red's ZoneSandbox (and is denied in sealed mode).
+        """
         try:
+            if sandbox:
+                with sandbox.zone_open(path) as f:
+                    return json.load(f)
             return json.loads(Path(path).read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return None
+
+    @staticmethod
+    def infer_blocked(ms: float, threshold_ms: float = 120) -> bool:
+        """Red's timing rule: a fast response means blue blocked it at the input."""
+        return ms < threshold_ms
 
     def timing_probe(self, send_fn, prompts: list[str], threshold_ms: float = 120) -> list[dict]:
         """Leak 2: blocked prompts come back faster, so response time reveals blue's verdict."""
@@ -42,7 +53,8 @@ class RedTeam:
             start = time.perf_counter()
             send_fn(prompt)
             ms = (time.perf_counter() - start) * 1000
-            results.append({"prompt": prompt, "ms": round(ms, 1), "inferred_blocked": ms < threshold_ms})
+            results.append({"prompt": prompt, "ms": round(ms, 1),
+                            "inferred_blocked": self.infer_blocked(ms, threshold_ms)})
         return results
 
     def cache_probe(self, model, guesses: list[str], salt: str | None = None,

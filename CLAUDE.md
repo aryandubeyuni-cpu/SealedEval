@@ -57,7 +57,7 @@ SealedEval/
 2. Zones (`zones/`: red, blue, model; data: `demo/attacks.json`, `zones/blue_rules.json`, `zones/model_weights.json`) ✅
 3. Broker (`broker/`) ✅
 4. Preflight + tripwires (`safety/`: sandbox, tripwires, preflight, escape_agent) ✅
-5. Naive vs sealed demo (`demo/`)
-6. Evidence bundle + verifier (`evidence/`)
+5. Naive vs sealed demo (`demo/`: naive_run, sealed_run, run_all; run: `cd backend && python -m app.demo.run_all`) ✅
+6. Evidence bundle + verifier (`evidence/`) ✅. Outputs in `backend/data/`: `naive_results.json`, `sealed_results.json`, `bundle.json`, `*_events.jsonl`
 7. Web dashboard (`api/main.py` routes + `frontend/`)
 8. README
