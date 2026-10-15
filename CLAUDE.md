@@ -15,6 +15,7 @@ SealedEval makes adversarial AI safety tests leak-proof and verifiable. Three pa
 
 - Pure Python 3.10+, standard library where possible. Allowed extra packages only: `fastapi`, `uvicorn`, `cryptography`, `requests`.
 - No Docker, no GPU, no real LLM. Zones are simulated as separate Python modules/processes. The MODEL is a simple rule-based mock.
+- **Prototype simulates isolation; production uses gVisor/Kata microVMs with seccomp and no network interface.** Every zone file/network/exec access goes through `app.safety.sandbox.ZoneSandbox`; network and exec calls are simulated, never real.
 - Must run on Windows, Mac and Linux.
 - Every module must be small, readable and demo-friendly.
 - Frontend is plain HTML/CSS/JS (no build step, no framework).
@@ -55,7 +56,7 @@ SealedEval/
 1. Proof core (`core/`: crypto, log, contract) ✅
 2. Zones (`zones/`: red, blue, model; data: `demo/attacks.json`, `zones/blue_rules.json`, `zones/model_weights.json`) ✅
 3. Broker (`broker/`) ✅
-4. Preflight + tripwires (`safety/`)
+4. Preflight + tripwires (`safety/`: sandbox, tripwires, preflight, escape_agent) ✅
 5. Naive vs sealed demo (`demo/`)
 6. Evidence bundle + verifier (`evidence/`)
 7. Web dashboard (`api/main.py` routes + `frontend/`)

@@ -18,12 +18,13 @@ class Broker:
     """The only path between zones. Sealed mode enforces the contract; naive mode shows today's leaks."""
 
     def __init__(self, mode: str, red, blue, model, log: HashChainLog,
-                 contract: InformationFlowContract | None = None):
+                 contract: InformationFlowContract | None = None, monitor=None):
         if mode not in ("naive", "sealed"):
             raise ValueError("mode must be 'naive' or 'sealed'")
         self.mode = mode
         self.red, self.blue, self.model, self.log = red, blue, model, log
         self.contract = contract or default_contract()
+        self.monitor = monitor  # TripwireMonitor: once it freezes, the broker refuses all work
 
         # Each party gets its own token (handed out of band). Salts isolate tenants in the model cache.
         self.tokens = {role: secrets.token_hex(16) for role in ROLES}
@@ -37,6 +38,10 @@ class Broker:
     # ------------------------------------------------------------ entry point for red
 
     def handle_red_prompt(self, token: str, message: dict) -> dict:
+        if self.monitor and self.monitor.frozen:
+            prompt_id = message.get("prompt_id") if isinstance(message, dict) else None
+            self.log.append("run_frozen", {"prompt_id": prompt_id})
+            return {"error": "run frozen"}
         if self.mode == "naive":
             return self._handle_naive(message)
         return self._handle_sealed(token, message)
